@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    let trends = []
+    let trends: any[] = []
     if (includeTrends) {
       trends = await fetchTrends(platform)
     }

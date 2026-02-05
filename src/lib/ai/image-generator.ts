@@ -35,6 +35,10 @@ export async function generateImage(
       quality: 'standard',
     })
 
+    if (!response.data || response.data.length === 0) {
+      throw new Error('No image data returned from OpenAI')
+    }
+
     const imageUrl = response.data[0].url
     const revisedPrompt = response.data[0].revised_prompt
 

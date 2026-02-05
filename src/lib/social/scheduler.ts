@@ -100,7 +100,7 @@ export async function publishPostNow(
   for (const platform of platforms) {
     try {
       const account = post.user.socialAccounts.find(
-        (acc) => acc.platform === platform
+        (acc: any) => acc.platform === platform
       )
 
       if (!account) {

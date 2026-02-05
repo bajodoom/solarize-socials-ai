@@ -54,7 +54,7 @@ export async function getCachedTrends(
     take: 10,
   })
 
-  return trends.map((trend) => ({
+  return trends.map((trend: any) => ({
     platform: trend.platform,
     topic: trend.topic,
     hashtag: trend.hashtag || undefined,
