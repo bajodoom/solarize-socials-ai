@@ -2,6 +2,29 @@
 
 An AI-powered social media automation platform that generates content with A/B testing variations, creates AI images, integrates trending topics, and provides a visual content calendar for scheduling posts across multiple social platforms.
 
+## 🚀 Quick Start
+
+**Want to get started immediately?** See **[QUICKSTART.md](QUICKSTART.md)** for a 5-minute setup guide!
+
+```bash
+# Quick setup (requires Node.js 18+, PostgreSQL, Redis, OpenAI API key)
+git clone https://github.com/bajodoom/solarize-socials-ai.git
+cd solarize-socials-ai
+npm install
+cp .env.example .env
+# Edit .env with your credentials
+npx prisma generate && npx prisma db push
+npm run dev
+# Visit http://localhost:3000
+```
+
+**Need help?** Check:
+- 📋 **[QUICKSTART.md](QUICKSTART.md)** - Beginner-friendly setup guide
+- 📖 **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - Detailed documentation
+- 🐛 [Troubleshooting](#troubleshooting) - Common issues and solutions
+
+---
+
 ## Features
 
 ### 🤖 AI-Powered Content Generation
@@ -269,6 +292,56 @@ npx prisma studio  # Open Prisma Studio
 - Social media tokens are encrypted in the database
 - API routes are protected with authentication middleware
 - Rate limiting implemented on API endpoints
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Port 3000 is already in use"
+```bash
+# Kill the process using port 3000
+npx kill-port 3000
+# Or run on a different port
+PORT=3001 npm run dev
+```
+
+#### "Cannot connect to database"
+1. Verify PostgreSQL is running: `psql --version`
+2. Check your DATABASE_URL in `.env`
+3. Test connection: `psql "your-database-url-here"`
+4. For cloud databases (Supabase/Neon), verify connection string format
+
+#### "Redis connection refused"
+1. Check if Redis is running: `redis-cli ping` (should return "PONG")
+2. Start Redis: `redis-server`
+3. Or use cloud Redis: [Upstash](https://upstash.com/) (free tier)
+
+#### "OpenAI API errors"
+1. Verify your API key in `.env` is correct
+2. Check you have credits: https://platform.openai.com/account/usage
+3. Ensure billing is set up: https://platform.openai.com/account/billing
+
+#### "Prisma Client errors"
+```bash
+# Regenerate Prisma Client
+npx prisma generate
+
+# Reset and recreate database
+npx prisma db push --force-reset
+```
+
+#### "Module not found" errors
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Need More Help?
+
+1. 📋 Check [QUICKSTART.md](QUICKSTART.md) for step-by-step setup
+2. 📖 See [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) for detailed docs
+3. 🐛 [Create an issue](https://github.com/bajodoom/solarize-socials-ai/issues) on GitHub
 
 ## Contributing
 
