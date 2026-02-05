@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String          @id @default(cuid())
+  email             String          @unique
+  name              String?
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  subscriptionTier  String          @default("free")
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  accounts          Account[]
+  sessions          Session[]
+  socialAccounts    SocialAccount[]
+  posts             Post[]
+  templates         Template[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model SocialAccount {
+  id           String   @id @default(cuid())
+  userId       String
+  platform     String   // 'twitter', 'linkedin', 'facebook', 'instagram'
+  accountId    String
+  accountName  String
+  accessToken  String   @db.Text
+  refreshToken String?  @db.Text
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, platform, accountId])
+  @@index([userId])
+}
+
+model Post {
+  id           String    @id @default(cuid())
+  userId       String
+  content      String    @db.Text
+  variations   Json?     // Array of content variations for A/B testing
+  imageUrl     String?
+  imagePrompt  String?   @db.Text
+  scheduledFor DateTime?
+  postedAt     DateTime?
+  status       String    @default("draft") // 'draft', 'scheduled', 'posted', 'failed'
+  platforms    String[]  // Array of target platforms
+  hashtags     String[]
+  trends       Json?     // Trending topics used
+  aiPrompt     String?   @db.Text
+  aiModel      String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analytics Analytics[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledFor])
+}
+
+model Template {
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  prompt        String   @db.Text
+  tone          String
+  includeTrends Boolean  @default(false)
+  includeImage  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model Analytics {
+  id          String   @id @default(cuid())
+  postId      String
+  platform    String
+  likes       Int      @default(0)
+  shares      Int      @default(0)
+  comments    Int      @default(0)
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, platform])
+  @@index([postId])
+}
+
+model Trend {
+  id         String   @id @default(cuid())
+  platform   String
+  topic      String
+  hashtag    String?
+  rank       Int
+  category   String?
+  fetchedAt  DateTime @default(now())
+  expiresAt  DateTime
+  
+  @@index([platform])
+  @@index([expiresAt])
+}
