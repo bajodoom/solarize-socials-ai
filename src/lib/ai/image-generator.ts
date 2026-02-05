@@ -1,8 +1,15 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openaiInstance: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openaiInstance
+}
 
 export interface GenerateImageParams {
   prompt: string
@@ -27,6 +34,7 @@ export async function generateImage(
   }
 
   try {
+    const openai = getOpenAI()
     const response = await openai.images.generate({
       model: 'dall-e-3',
       prompt: enhancedPrompt,

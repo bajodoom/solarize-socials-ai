@@ -1,9 +1,16 @@
 import OpenAI from 'openai'
 import { extractHashtags, getCharacterLimit } from '@/lib/utils'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openaiInstance: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openaiInstance
+}
 
 export interface GenerateContentParams {
   topic: string
@@ -75,6 +82,7 @@ export async function generateContent(
   prompt += `[{"text": "Post content here..."}, {"text": "Another variation..."}]`
 
   try {
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -147,6 +155,7 @@ export async function regenerateVariation(
   
   const prompt = `Create a new variation of this ${platform} post while maintaining the ${tone} tone:\n\n"${originalText}"\n\nRequirements:\n- Keep within ${characterLimit} characters\n- Make it unique but on the same topic\n- Include relevant hashtags\n- Return only the new post text, nothing else.`
 
+  const openai = getOpenAI()
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
     messages: [
