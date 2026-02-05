@@ -1,2 +1,2 @@
 # solarize-socials-ai
-Social network automatisation system
+Social network automation system
