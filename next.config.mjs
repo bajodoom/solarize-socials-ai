@@ -6,12 +6,6 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   
-  // ESLint configuration
-  eslint: {
-    // Ensure ESLint errors are caught during build
-    ignoreDuringBuilds: false,
-  },
-  
   // Image optimization
   images: {
     remotePatterns: [
@@ -39,10 +33,6 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-};
-
-export default nextConfig;
-  reactStrictMode: true,
 };
 
 export default nextConfig;
