@@ -1,0 +1,51 @@
+# Docker Compose for Solarize Socials AI
+# This provides PostgreSQL and Redis for local development
+# You still need to run the Next.js app with 'npm run dev'
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: solarize-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: solarize_socials
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: solarize-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+# Usage:
+# 1. Start services: docker-compose up -d
+# 2. Check status: docker-compose ps
+# 3. View logs: docker-compose logs -f
+# 4. Stop services: docker-compose down
+# 5. Use these connection strings in .env:
+#    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/solarize_socials"
+#    REDIS_URL="redis://localhost:6379"
